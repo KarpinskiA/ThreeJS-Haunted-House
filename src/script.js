@@ -164,7 +164,7 @@ const bush3 = new THREE.Mesh(bushGeometry, bushMaterial)
 bush3.scale.set(0.5, 0.5, 0.5)
 bush3.position.set(-1.2, 0.2, 2.2)
 
-
+// Left big bush
 const bush4 = new THREE.Mesh(bushGeometry, bushMaterial)
 bush4.scale.set(0.25, 0.25, 0.25)
 bush4.position.set(-1.8, 0.1, 2.1)
