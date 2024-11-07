@@ -16,8 +16,33 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 // AxesHelper
-const axesHelper = new THREE.AxesHelper(5);
-scene.add(axesHelper)
+// const axesHelper = new THREE.AxesHelper(5);
+// scene.add(axesHelper)
+
+/**
+ * Textures
+ */
+const textureLoader = new THREE.TextureLoader()
+
+// Floor texture
+const floorAlphaTexture = textureLoader.load('./floor/alpha.jpg')
+
+// Wall texture
+
+// Roof texture
+
+// Door texture
+const doorAlphaTexture = textureLoader.load('./door/alpha.jpg')
+const doorAmbientOcclusionTexture = textureLoader.load('./door/ambientOcclusion.jpg')
+const doorColorTexture = textureLoader.load('./door/color.jpg')
+const doorHeightTexture = textureLoader.load('./door/height.jpg')
+const doorMetalnessTexture = textureLoader.load('./door/metalness.jpg')
+const doorNormalTexture = textureLoader.load('./door/normal.jpg')
+const doorRoughnessTexture = textureLoader.load('./door/roughness.jpg')
+
+doorColorTexture.colorSpace = THREE.SRGBColorSpace
+
+// Grave texture
 
 /**
  * House
@@ -30,7 +55,10 @@ const floorDebugParams = {
 
 const floor = new THREE.Mesh(
     new THREE.PlaneGeometry(floorDebugParams.width, floorDebugParams.height),
-    new THREE.MeshBasicMaterial()
+    new THREE.MeshStandardMaterial({
+        alphaMap: floorAlphaTexture,
+        transparent: true
+    })
 );
 floor.rotation.x = - Math.PI * 0.5;
 scene.add(floor);
@@ -58,7 +86,7 @@ const wallDebugParams = {
 
 const wall = new THREE.Mesh(
     new THREE.BoxGeometry(wallDebugParams.width, wallDebugParams.height, wallDebugParams.depth),
-    new THREE.MeshBasicMaterial({ color: 'red' })
+    new THREE.MeshStandardMaterial({ color: 'red' })
 )
 wall.position.y = floor.position.y + wallDebugParams.height / 2
 scene.add(wall)
@@ -92,7 +120,7 @@ const roofDebugParams = {
 
 const roof = new THREE.Mesh(
     new THREE.ConeGeometry(roofDebugParams.radius, roofDebugParams.height, roofDebugParams.radialSegments),
-    new THREE.MeshBasicMaterial({ color: 'green' })
+    new THREE.MeshStandardMaterial({ color: 'green' })
 )
 roof.rotation.y = Math.PI * 0.25
 roof.position.y = wallDebugParams.height + roofDebugParams.height / 2
@@ -115,15 +143,24 @@ roofFolder.add(roofDebugParams, 'height').min(1).max(50).step(0.1).onChange((val
 
 // Door
 const doorDebugParams = {
-    width: 1.5,
+    width: 2,
     height: 2
 }
 
 const door = new THREE.Mesh(
     new THREE.PlaneGeometry(doorDebugParams.width, doorDebugParams.height),
-    new THREE.MeshBasicMaterial({ color: 'yellow' })
+    new THREE.MeshStandardMaterial({
+        map: doorColorTexture,
+        transparent: true,
+        alphaMap: doorAlphaTexture,
+        aoMap: doorAmbientOcclusionTexture,
+        displacementMap: doorHeightTexture,
+        normalMap: doorNormalTexture,
+        metalnessMap: doorMetalnessTexture,
+        roughnessMap: doorRoughnessTexture
+    })
 )
-door.position.y = floor.position.y + doorDebugParams.height / 2
+door.position.y = doorDebugParams.height / 2
 door.position.z = wallDebugParams.depth / 2 + 0.01
 scene.add(door)
 
@@ -150,7 +187,7 @@ const bushDebugParams = {
 }
 
 const bushGeometry = new THREE.SphereGeometry(bushDebugParams.radius, bushDebugParams.widthSegments, bushDebugParams.heightSegments)
-const bushMaterial = new THREE.MeshBasicMaterial({ color: 'blue' })
+const bushMaterial = new THREE.MeshStandardMaterial({ color: 'blue' })
 
 // Right big bush
 const bush1 = new THREE.Mesh(bushGeometry, bushMaterial)
@@ -225,7 +262,7 @@ const graveDebugParam = {
 }
 
 const graveGeometry = new THREE.BoxGeometry(graveDebugParam.width, graveDebugParam.height, graveDebugParam.depth)
-const graveMaterial = new THREE.MeshBasicMaterial({ color: 'grey' })
+const graveMaterial = new THREE.MeshStandardMaterial({ color: 'grey' })
 
 // On veut 30 tombes
 for (let i = 0; i < 30; i++) {
@@ -254,6 +291,7 @@ for (let i = 0; i < 30; i++) {
 
 // Graves debug
 const graveFolder = gui.addFolder('Grave')
+graveFolder.close()
 
 graveFolder.add(graveDebugParam, 'width').min(0.1).max(1).step(0.01).onChange((value) => {
     grave.geometry.dispose()
