@@ -37,7 +37,7 @@ scene.add(floor);
 
 // Floor debug
 const floorDebugFolder = gui.addFolder('Floor')
-
+floorDebugFolder.close()
 
 floorDebugFolder.add(floorDebugParams, 'width').min(10).max(50).step(0.1).onChange((value) => {
     floor.geometry.dispose()
@@ -65,6 +65,7 @@ scene.add(wall)
 
 // Wall debug
 const wallFolder = gui.addFolder('Wall')
+wallFolder.close()
 
 wallFolder.add(wallDebugParams, 'width').min(1).max(50).step(0.1).onChange((value) => {
     wall.geometry.dispose()
@@ -99,6 +100,7 @@ scene.add(roof)
 
 // Roof debug
 const roofFolder = gui.addFolder('Roof')
+roofFolder.close()
 
 roofFolder.add(roofDebugParams, 'radius').min(1).max(50).step(0.1).onChange((value) => {
     roof.geometry.dispose()
@@ -127,6 +129,7 @@ scene.add(door)
 
 // Door debug
 const doorFolder = gui.addFolder('Door')
+doorFolder.close()
 
 doorFolder.add(doorDebugParams, 'width').min(1).max(wallDebugParams.width).step(0.1).onChange((value) => {
     door.geometry.dispose()
@@ -172,8 +175,9 @@ scene.add(bush1, bush2, bush3, bush4)
 
 // Bush debug
 const bushFolder = gui.addFolder('Bush')
+bushFolder.close()
 
-// Right big bush
+// Debug right big bush
 const rightBigBush = bushFolder.addFolder('Right big bush')
 rightBigBush.close()
 rightBigBush.add(bush1.position, 'x').min(-5).max(5).step(0.1).name('Position X')
@@ -183,7 +187,7 @@ rightBigBush.add(bush1.scale, 'x').min(0.1).max(2).step(0.1).name('Scale X')
 rightBigBush.add(bush1.scale, 'y').min(0.1).max(2).step(0.1).name('Scale Y')
 rightBigBush.add(bush1.scale, 'z').min(0.1).max(2).step(0.1).name('Scale Z')
 
-// Right small bush
+// Debug right small bush
 const rightSmallBush = bushFolder.addFolder('Right small bush')
 rightSmallBush.close()
 rightSmallBush.add(bush2.position, 'x').min(-5).max(5).step(0.1).name('Position X')
@@ -193,7 +197,7 @@ rightSmallBush.add(bush2.scale, 'x').min(0.1).max(2).step(0.1).name('Scale X')
 rightSmallBush.add(bush2.scale, 'y').min(0.1).max(2).step(0.1).name('Scale Y')
 rightSmallBush.add(bush2.scale, 'z').min(0.1).max(2).step(0.1).name('Scale Z')
 
-// Left big bush
+// Debug left big bush
 const leftBigBush = bushFolder.addFolder('Left big bush')
 leftBigBush.close()
 leftBigBush.add(bush3.position, 'x').min(-5).max(5).step(0.1).name('Position X')
@@ -203,7 +207,7 @@ leftBigBush.add(bush3.scale, 'x').min(0.1).max(2).step(0.1).name('Scale X')
 leftBigBush.add(bush3.scale, 'y').min(0.1).max(2).step(0.1).name('Scale Y')
 leftBigBush.add(bush3.scale, 'z').min(0.1).max(2).step(0.1).name('Scale Z')
 
-// Left small bush
+// Debug left small bush
 const leftSmallBush = bushFolder.addFolder('Left small bush')
 leftSmallBush.close()
 leftSmallBush.add(bush4.position, 'x').min(-5).max(5).step(0.1).name('Position X')
@@ -212,6 +216,57 @@ leftSmallBush.add(bush4.position, 'z').min(-5).max(5).step(0.1).name('Position Z
 leftSmallBush.add(bush4.scale, 'x').min(0.1).max(2).step(0.1).name('Scale X')
 leftSmallBush.add(bush4.scale, 'y').min(0.1).max(2).step(0.1).name('Scale Y')
 leftSmallBush.add(bush4.scale, 'z').min(0.1).max(2).step(0.1).name('Scale Z')
+
+// Graves
+const graveDebugParam = {
+    width: 0.5,
+    height: 1,
+    depth: 0.15
+}
+
+const graveGeometry = new THREE.BoxGeometry(graveDebugParam.width, graveDebugParam.height, graveDebugParam.depth)
+const graveMaterial = new THREE.MeshBasicMaterial({ color: 'grey' })
+
+// On veut 30 tombes
+for (let i = 0; i < 30; i++) {
+    // Création de la tombe
+    const grave = new THREE.Mesh(graveGeometry, graveMaterial)
+
+    // Coordonnées random
+    const random = Math.random() * Math.PI * 2 // pour que ça fasse un cercle
+    const radius = 3.5 + Math.random() * 4 // pour positionner entre 3 et 4m
+    const x = Math.sin(random) * radius
+    const z = Math.cos(random) * radius
+
+    // Positionnement de la tombe
+    grave.position.x = x
+    grave.position.z = z
+    grave.position.y = Math.random() * 0.4 // Pour faire varier a "taille" de la tombe en l'enfonçant plus ou moins
+
+    // Rotation de la tombe
+    grave.rotation.x = (Math.random() - 0.5) * 0.4
+    grave.rotation.y = (Math.random() - 0.5) * 0.4
+    grave.rotation.z = (Math.random() - 0.5) * 0.4
+
+    // Ajout de la tombe à la scène
+    scene.add(grave)
+}
+
+// Graves debug
+const graveFolder = gui.addFolder('Grave')
+
+graveFolder.add(graveDebugParam, 'width').min(0.1).max(1).step(0.01).onChange((value) => {
+    grave.geometry.dispose()
+    grave.geometry = new THREE.BoxGeometry(value, graveDebugParam.height, graveDebugParam.depth)
+})
+graveFolder.add(graveDebugParam, 'height').min(0.1).max(1).step(0.01).onChange((value) => {
+    grave.geometry.dispose()
+    grave.geometry = new THREE.BoxGeometry(graveDebugParam.width, value, graveDebugParam.depth)
+})
+graveFolder.add(graveDebugParam, 'depth').min(0.1).max(1).step(0.01).onChange((value) => {
+    grave.geometry.dispose()
+    grave.geometry = new THREE.BoxGeometry(graveDebugParam.width, graveDebugParam.height, value)
+})
 
 /**
  * Lights
